@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "Cell.hpp"
-using std::size_t;
 
 class Board {
     std::vector<std::vector<Cell>> board;
