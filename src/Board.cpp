@@ -3,28 +3,31 @@
 #include <vector>
 #include <iostream>
 
-
 Board::Board(int rows, int col) {
     board.resize(rows, std::vector<Cell>(col));
     this->rows = rows;
     this->col = col;
 }
-int Board::getRows() {
+size_t Board::getRows() {
     return rows;
 }
-int Board::getCol() {
+
+size_t Board::getCol() {
     return col;
 }
+
 void Board::setCell(const size_t row, const size_t col, Cell cell) {
     board[row][col] = cell;
 }
-bool Board::isOnBoard(const int current_row, const int current_col, const size_t board_rows, const size_t board_cols) {
-    if (current_row >= board_rows || current_col >= board_cols || current_row < 0 || current_col < 0) {
+
+bool Board::isOnBoard(const size_t current_row, const size_t current_col, const size_t board_rows, const size_t board_cols) {
+    if (current_row >= board_rows || current_col >= board_cols) {
         return false;
     } else {
         return true;
     }
 }
+
 Cell Board::getCell(const int row, const int col) {
     return board[row][col];
 }
