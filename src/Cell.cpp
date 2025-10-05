@@ -1,6 +1,6 @@
 #include "Cell.hpp"
 
-Cell::Cell(CellState state, int owner) noexcept {
+Cell::Cell(CellState state, Owner owner) noexcept {
     this->owner = owner;
     this->state = state;
 }
@@ -17,19 +17,11 @@ bool Cell::isAlive() const noexcept {
     return state == CellState::Alive; 
 }
 
-void Cell::toggle() noexcept { 
-    if (state == CellState::Dead) {
-        state = CellState::Alive;
-    }
-    else {
-        state = CellState::Dead;
-    }
-}
 
-int Cell::getOwner() const noexcept { 
+Owner Cell::getOwner() const noexcept { 
     return owner; 
 }
 
-void Cell::setOwner(int owner) noexcept { 
+void Cell::setOwner(Owner owner) noexcept { 
     this->owner = owner; 
 }

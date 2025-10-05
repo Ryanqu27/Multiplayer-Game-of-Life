@@ -12,14 +12,17 @@ class Board {
         size_t getRows();
         size_t getCol();
 
-        void setCell(const size_t row, const size_t col, Cell cell);
         bool isOnBoard(size_t current_row, size_t current_col, size_t board_rows, size_t board_cols);
         Cell getCell(const int row, const int col);
-        CellState stepCell(CellState current, size_t num_neighbors);
+        void stepCell(Cell &cell, const size_t redNeighbors, const size_t blueNeighbors);
 
-        int getNumAliveNeighbors(size_t row, size_t col);
+        int getNumBlueNeighbors(size_t row, size_t col);
+        int getNumRedNeighbors(size_t row, size_t col);
+
         void stepBoard();
         void clear();
-        void toggleCell(int row, int column);
+
+        void toggleRedCell(int row, int column);
+        void toggleBlueCell(int row, int column);
 
 };

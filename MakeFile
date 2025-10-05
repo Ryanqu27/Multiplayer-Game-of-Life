@@ -1,4 +1,39 @@
+CXX := g++
+CXXFLAGS := -Wall -Wextra -Werror -std=c++20 -I. \
+	-Iimgui-master/imgui-master \
+	-Iimgui-master/imgui-master/backends \
+	-F/Library/Frameworks \
+	-I/Library/Frameworks/SDL2.framework/Headers
+
+IMGUI_SRCS := \
+	imgui-master/imgui-master/imgui.cpp \
+	imgui-master/imgui-master/imgui_draw.cpp \
+	imgui-master/imgui-master/imgui_tables.cpp \
+	imgui-master/imgui-master/imgui_widgets.cpp \
+	imgui-master/imgui-master/imgui_demo.cpp \
+	imgui-master/imgui-master/backends/imgui_impl_sdl2.cpp \
+	imgui-master/imgui-master/backends/imgui_impl_opengl3.cpp
+
+SRC := src/*.cpp
+OUT := out.exe
+
+# Use pkg-config if available
+SDL_CFLAGS := $(shell pkg-config --cflags sdl2 2>/dev/null)
+SDL_LIBS   := $(shell pkg-config --libs sdl2 2>/dev/null)
+
+# If pkg-config failed, set defaults depending on OS
+ifeq ($(SDL_LIBS),)
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	SDL_LIBS := -lSDL2 -lGL
+endif
+ifeq ($(UNAME_S),Darwin)
+	SDL_LIBS := -F/Library/Frameworks -framework SDL2 -framework OpenGL
+endif
+endif
+
 build:
-	g++ -Wall -Wextra -Werror -o out src/*.cpp
-run: 
-	./out
+	$(CXX) $(CXXFLAGS) $(SDL_CFLAGS) -o $(OUT) $(SRC) $(IMGUI_SRCS) $(SDL_LIBS) -lGL
+
+run:
+	./$(OUT)

@@ -3,22 +3,22 @@
 #include <cstdint>
 
 enum class CellState : bool { Dead = false, Alive = true };
+enum class Owner : int { None = 0, Red = 1, Blue = 2 };
 
-// A Cell represents a single square on the board.
 class Cell {
 private:
+    //If cell is dead, owner is none.
     CellState state;
-    int owner; // 0 = red cell. 1 = blue cell. -1 = dead cell
+    Owner owner; 
 public:
     // Construct a cell. Default is dead.
-    explicit Cell(CellState state = CellState::Dead, int owner = -1) noexcept;
+    explicit Cell(CellState state = CellState::Dead, Owner owner = Owner::None) noexcept;
 
     [[nodiscard]] CellState getState() const noexcept;
     void setState(CellState s) noexcept;
 
     [[nodiscard]] bool isAlive() const noexcept;
-    void toggle() noexcept;
 
-    [[nodiscard]] int getOwner() const noexcept;
-    void setOwner(int owner) noexcept;
+    [[nodiscard]] Owner getOwner() const noexcept;
+    void setOwner(Owner owner) noexcept;
 };
