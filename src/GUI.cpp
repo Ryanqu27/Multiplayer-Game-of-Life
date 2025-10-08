@@ -121,10 +121,10 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
     Board board(30, 40);
     bool running = false;
     float cell_size = 16.0f;
-    uint32_t frameStart = SDL_GetTicks();
     const int frameDelay = 1000 / 60; // 60 FPS cap
     Owner currentToggling = Owner::Red;
     bool done = false;
+    
     while (!done) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -134,6 +134,7 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
                 done = true;
         }
+        uint32_t frameStart = SDL_GetTicks();
         uint32_t frameTime = SDL_GetTicks() - frameStart;
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
