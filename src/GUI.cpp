@@ -4,19 +4,19 @@
 
 void DrawBoardUI(Board &board, bool &running, float &zoom, Owner &currentToggling) {
     ImGui::Begin("Multiplayer Game of Life");
-    if (ImGui::Button(running ? "Pause" : "Run")) {
+    if (ImGui::Button(running ? "Pause" : "Run", ImVec2(90,25))) {
         running = !running;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Step")) {
+    if (ImGui::Button("Step", ImVec2(90,25))) {
         board.stepBoard();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Clear")) {
+    if (ImGui::Button("Clear", ImVec2(90,25))) {
         board.clear();
     }
     ImGui::SameLine();
-    if (ImGui::Button(currentToggling == Owner::Red ? "Red Toggle" : "Blue Toggle")) {
+    if (ImGui::Button(currentToggling == Owner::Red ? "Red Toggle" : "Blue Toggle", ImVec2(90,25))) {
         if (currentToggling == Owner::Red) {
             currentToggling = Owner::Blue;
         }
@@ -24,10 +24,12 @@ void DrawBoardUI(Board &board, bool &running, float &zoom, Owner &currentTogglin
             currentToggling = Owner::Red;
         }
     }
+
     if(running) {
         board.stepBoard();
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
+    
     ImGui::SliderFloat("Cell Size", &zoom, 6.0f, 48.0f);
 
     ImGui::Text("Board: %zu x %zu", board.getRows(), board.getCol());
@@ -38,7 +40,7 @@ void DrawBoardUI(Board &board, bool &running, float &zoom, Owner &currentTogglin
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
     const float cell_size = zoom;
-    const int rows = (int)board.getRows();
+    const int rows = (int)board.getRows(); 
     const int cols = (int)board.getCol();
     const ImVec2 board_size = ImVec2(cols * cell_size, rows * cell_size);
 
@@ -124,7 +126,7 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
     const int frameDelay = 1000 / 60; // 60 FPS cap
     Owner currentToggling = Owner::Red;
     bool done = false;
-    
+
     while (!done) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {

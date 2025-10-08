@@ -10,5 +10,6 @@ int main(int, char**) {
     SDL_GLContext gl_context = NULL;
     RunProgram(window, gl_context);
     CleanUpProgram(window, gl_context);
+    
     return 0;
 }
