@@ -2,7 +2,6 @@
 #include "Board.hpp"
 #include "Cell.hpp"
 #include <iostream>
-// Helper to draw the board as a grid inside an ImGui window and handle clicks
 
 
 int main(int, char**) {
