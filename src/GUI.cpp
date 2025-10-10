@@ -2,7 +2,7 @@
 #include <thread>
 #include <chrono>
 
-void DrawBoardUI(Board &board, bool &running, float &zoom, Owner &currentToggling) {
+void DrawBoardUI(Board &board, bool &running, float &stepsPerSecond, float &zoom, Owner &currentToggling) {
     ImGui::Begin("Multiplayer Game of Life");
     if (ImGui::Button(running ? "Pause" : "Run", ImVec2(90,25))) {
         running = !running;
@@ -24,14 +24,9 @@ void DrawBoardUI(Board &board, bool &running, float &zoom, Owner &currentTogglin
             currentToggling = Owner::Red;
         }
     }
-
-    if(running) {
-        board.stepBoard();
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    }
     
     ImGui::SliderFloat("Cell Size", &zoom, 6.0f, 48.0f);
-
+    ImGui::SliderFloat("Run Speed", &stepsPerSecond, 2.0f, 20.0f);
     ImGui::Text("Board: %zu x %zu", board.getRows(), board.getCol());
 
     // Grid area
@@ -119,13 +114,15 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Create a board
+    // Create a board and initialize needed variables
     Board board(30, 40);
     bool running = false;
     float cell_size = 16.0f;
     const int frameDelay = 1000 / 60; // 60 FPS cap
     Owner currentToggling = Owner::Red;
     bool done = false;
+    float stepsPerSecond = 4;
+    int lastStepTime = SDL_GetTicks();
 
     while (!done) {
         SDL_Event event;
@@ -141,11 +138,20 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);
         }
+
+        //Board step speed logic
+        int currentTime = SDL_GetTicks();
+        float elapsed = (currentTime - lastStepTime);
+        if(running && elapsed >= 1000.0 / stepsPerSecond) {
+            board.stepBoard();
+            lastStepTime = currentTime;
+        }
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
-        DrawBoardUI(board, running, cell_size, currentToggling);
+        DrawBoardUI(board, running, stepsPerSecond, cell_size, currentToggling);
 
         //Program rendering
         ImGui::Render();

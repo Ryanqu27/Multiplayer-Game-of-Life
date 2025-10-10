@@ -8,6 +8,6 @@
 #include "Board.hpp"
 #include "Cell.hpp"
 
-void DrawBoardUI(Board &board, bool &running, float &zoom, Owner &currentToggle);
+void DrawBoardUI(Board &board, bool &running, float &stepsPerSecond, float &zoom, Owner &currentToggle);
 void RunProgram(SDL_Window*& window, SDL_GLContext gl_context);
 void CleanUpProgram(SDL_Window* window, SDL_GLContext& gl_context);
