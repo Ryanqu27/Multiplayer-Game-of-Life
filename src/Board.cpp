@@ -207,3 +207,26 @@ void Board::toggleBlueCell(int row, int column) {
     }
 }
 
+std::size_t Board::getBlueCells() {
+    std::size_t count = 0;
+    for(std::size_t i = 0; i < board.size(); i++) {
+        for(std::size_t j = 0; j < board[0].size(); j++) {
+            if(board[i][j].getOwner() == Owner::Blue) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+std::size_t Board::getRedCells() {
+    std::size_t count = 0;
+    for(std::size_t i = 0; i < board.size(); i++) {
+        for(std::size_t j = 0; j < board[0].size(); j++) {
+            if(board[i][j].getOwner() == Owner::Red) {
+                count++;
+            }
+        }
+    }
+    return count;
+}

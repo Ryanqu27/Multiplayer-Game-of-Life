@@ -4,19 +4,19 @@
 
 void DrawBoardUI(Board &board, bool &running, float &stepsPerSecond, float &zoom, Owner &currentToggling) {
     ImGui::Begin("Multiplayer Game of Life");
-    if (ImGui::Button(running ? "Pause" : "Run", ImVec2(90,25))) {
+    if (ImGui::Button(running ? "Pause" : "Run", ImVec2(120,25))) {
         running = !running;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Step", ImVec2(90,25))) {
+    if (ImGui::Button("Step", ImVec2(120,25))) {
         board.stepBoard();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Clear", ImVec2(90,25))) {
+    if (ImGui::Button("Clear", ImVec2(120,25))) {
         board.clear();
     }
     ImGui::SameLine();
-    if (ImGui::Button(currentToggling == Owner::Red ? "Red Toggle" : "Blue Toggle", ImVec2(90,25))) {
+    if (ImGui::Button(currentToggling == Owner::Red ? "Red Toggle" : "Blue Toggle", ImVec2(120,25))) {
         if (currentToggling == Owner::Red) {
             currentToggling = Owner::Blue;
         }
@@ -25,9 +25,11 @@ void DrawBoardUI(Board &board, bool &running, float &stepsPerSecond, float &zoom
         }
     }
     
+   
+
     ImGui::SliderFloat("Cell Size", &zoom, 6.0f, 48.0f);
     ImGui::SliderFloat("Run Speed", &stepsPerSecond, 2.0f, 20.0f);
-    ImGui::Text("Board: %zu x %zu", board.getRows(), board.getCol());
+    ImGui::Text("Red Cells: %zu | Blue Cells: %zu", board.getRedCells(), board.getBlueCells());
 
     // Grid area
     ImGui::BeginChild("BoardArea", ImVec2(0, 0), true);
@@ -108,6 +110,9 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO(); (void)io;
+
+    //Load higher quality text font
+    io.Fonts->AddFontFromFileTTF("imgui-master/imgui-master/misc/fonts/Cousine-Regular.ttf", 20.0f);  
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer bindings

@@ -9,8 +9,8 @@ class Board {
 
     public:
         Board(int rows, int col);
-        size_t getRows();
-        size_t getCol();
+        std::size_t getRows();
+        std::size_t getCol();
 
         bool isOnBoard(size_t current_row, size_t current_col, size_t board_rows, size_t board_cols);
         Cell getCell(const int row, const int col);
@@ -24,5 +24,8 @@ class Board {
 
         void toggleRedCell(int row, int column);
         void toggleBlueCell(int row, int column);
+
+        std::size_t getBlueCells();
+        std::size_t getRedCells();
 
 };
