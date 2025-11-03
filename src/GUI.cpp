@@ -2,34 +2,32 @@
 #include <thread>
 #include <chrono>
 
-void DrawBoardUI(Board &board, bool &running, float &stepsPerSecond, float &zoom, Owner &currentToggling) {
+void DrawBoardUI(Board &board, bool &running, float &stepsPerSecond, float &zoom) {
     ImGui::Begin("Multiplayer Game of Life");
-    if (ImGui::Button(running ? "Pause" : "Run", ImVec2(120,25))) {
-        running = !running;
+    if (board.getPlayerTurn() == Owner::None) {
+        running = true;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Step", ImVec2(120,25))) {
-        board.stepBoard();
+    if (ImGui::Button("Reset Game", ImVec2(120,25))) {
+        board.reset();
     }
-    ImGui::SameLine();
-    if (ImGui::Button("Clear", ImVec2(120,25))) {
-        board.clear();
+    if(board.getPlayerTurn() == Owner::None) {
+        ImGui::SameLine();
+        ImGui::Text("Game is running...");
     }
-    ImGui::SameLine();
-    if (ImGui::Button(currentToggling == Owner::Red ? "Red Toggle" : "Blue Toggle", ImVec2(120,25))) {
-        if (currentToggling == Owner::Red) {
-            currentToggling = Owner::Blue;
-        }
-        else {
-            currentToggling = Owner::Red;
-        }
+    else if(board.getPlayerTurn() == Owner::Red) {
+        ImGui::SameLine();
+        ImGui::Text("Red player's turn to place cells");
     }
-    
-   
+    else {
+        ImGui::SameLine();
+        ImGui::Text("Blue player's turn to place cells");
+    }
 
     ImGui::SliderFloat("Cell Size", &zoom, 6.0f, 48.0f);
     ImGui::SliderFloat("Run Speed", &stepsPerSecond, 2.0f, 20.0f);
     ImGui::Text("Red Cells: %zu | Blue Cells: %zu", board.getRedCells(), board.getBlueCells());
+
 
     // Grid area
     ImGui::BeginChild("BoardArea", ImVec2(0, 0), true);
@@ -51,12 +49,14 @@ void DrawBoardUI(Board &board, bool &running, float &stepsPerSecond, float &zoom
             ImVec2 m = ImGui::GetIO().MousePos;
             int mc = (int)((m.x - top_left.x) / cell_size);
             int mr = (int)((m.y - top_left.y) / cell_size);
-            if (mr >= 0 && mr < rows && mc >= 0 && mc < cols) {
-                if (currentToggling == Owner::Red) {
+            if (mr >= 0 && mr < rows && mc >= 0 && mc < cols && board.getPlayerTurn() != Owner::None && !board.getCell(mr,mc).isAlive()) {
+                if (board.getPlayerTurn() == Owner::Red) {
                     board.toggleRedCell(mr, mc);
+                    board.placeRedCell();
                 }
                 else {
                     board.toggleBlueCell(mr, mc);
+                    board.placeBlueCell();
                 }
             }
         }
@@ -124,7 +124,6 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
     bool running = false;
     float cell_size = 16.0f;
     const int frameDelay = 1000 / 60; // 60 FPS cap
-    Owner currentToggling = Owner::Red;
     bool done = false;
     float stepsPerSecond = 4;
     int lastStepTime = SDL_GetTicks();
@@ -156,7 +155,7 @@ void RunProgram(SDL_Window*& window, SDL_GLContext gl_context) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
-        DrawBoardUI(board, running, stepsPerSecond, cell_size, currentToggling);
+        DrawBoardUI(board, running, stepsPerSecond, cell_size);
 
         //Program rendering
         ImGui::Render();

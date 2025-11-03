@@ -1,4 +1,4 @@
-#include "GUI.hpp"
+#include "src/GUI.hpp"
 #include "Board.hpp"
 #include "Cell.hpp"
 #include <iostream>
