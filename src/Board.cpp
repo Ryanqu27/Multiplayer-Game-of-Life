@@ -1,6 +1,5 @@
 #include "Board.hpp"
 #include <array>
-#include <vector>
 #include <iostream>
 #include <random>
 
@@ -8,6 +7,9 @@ Board::Board(int rows, int col) {
     board.resize(rows, std::vector<Cell>(col));
     this->rows = rows;
     this->col = col;
+    this->playerTurn = Owner::Red;
+    this->placedBlueCells = 0;
+    this->placedRedCells = 0;
 }
 size_t Board::getRows() {
     return rows;
@@ -172,13 +174,16 @@ void Board::stepBoard() {
     board = std::move(nextBoard); // apply next generation
 }
 
-void Board::clear() {
+void Board::reset() {
     for (size_t i = 0; i < board.size(); i++) {
         for (size_t j = 0; j < board[0].size(); j++) {
             board[i][j].setState(CellState::Dead);
             board[i][j].setOwner(Owner::None);
         }
     }
+    playerTurn = Owner::Red;
+    placedRedCells = 0;
+    placedBlueCells = 0;
 }
 
 void Board::toggleRedCell(const int row, const int column) {
@@ -229,4 +234,24 @@ std::size_t Board::getRedCells() {
         }
     }
     return count;
+}
+
+Owner Board::getPlayerTurn() {
+    return playerTurn;
+}
+
+void Board::placeRedCell() {
+    placedRedCells++;
+    if(placedRedCells == 5 || placedRedCells == 10) {
+        playerTurn = Owner::Blue;
+    }
+}
+void Board::placeBlueCell() {
+    placedBlueCells++;
+    if(placedBlueCells == 5) {
+        playerTurn = Owner::Red;
+    }
+    else if(placedBlueCells == 10) {
+        playerTurn = Owner::None;
+    }
 }

@@ -6,6 +6,9 @@ class Board {
     std::vector<std::vector<Cell>> board;
     int rows;
     int col;
+    Owner playerTurn;
+    std::size_t placedRedCells;
+    std::size_t placedBlueCells;
 
     public:
         Board(int rows, int col);
@@ -20,7 +23,7 @@ class Board {
         int getNumRedNeighbors(size_t row, size_t col);
 
         void stepBoard();
-        void clear();
+        void reset();
 
         void toggleRedCell(int row, int column);
         void toggleBlueCell(int row, int column);
@@ -28,4 +31,8 @@ class Board {
         std::size_t getBlueCells();
         std::size_t getRedCells();
 
+        void setPlayerTurn(Owner color);
+        Owner getPlayerTurn();
+        void placeRedCell();
+        void placeBlueCell();
 };
