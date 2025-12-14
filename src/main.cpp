@@ -1,14 +1,13 @@
-#include "src/GUI.hpp"
+#include "GameWindow.hpp"
 #include "Board.hpp"
 #include "Cell.hpp"
 #include <iostream>
+#include <memory>
 
-
-int main(int, char**) {
-    SDL_Window* window = nullptr;
-    SDL_GLContext gl_context = NULL;
-    RunProgram(window, gl_context);
-    CleanUpProgram(window, gl_context);
-    
+int main(int argc, char* argv[]) {
+    int boardRows = 30;
+    int boardCols = 40;
+    GameWindow gameWindow(boardRows, boardCols);
+    gameWindow.runProgram();
     return 0;
 }

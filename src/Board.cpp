@@ -3,25 +3,28 @@
 #include <iostream>
 #include <random>
 
-Board::Board(int rows, int col) {
-    board.resize(rows, std::vector<Cell>(col));
+Board::Board(int rows, int cols) {
+    board.resize(rows, std::vector<Cell>(cols));
     this->rows = rows;
-    this->col = col;
+    this->cols = cols;
     this->playerTurn = Owner::Red;
     this->placedBlueCells = 0;
     this->placedRedCells = 0;
+    this->gameResult = GameResult::None;
+    this->numGenerations = 0;
 }
-size_t Board::getRows() {
+
+int Board::getRows() {
     return rows;
 }
 
-size_t Board::getCol() {
-    return col;
+int Board::getCol() {
+    return cols;
 }
 
 
-bool Board::isOnBoard(const size_t current_row, const size_t current_col, const size_t board_rows, const size_t board_cols) {
-    if (current_row >= board_rows || current_col >= board_cols) {
+bool Board::isOnBoard(const size_t currentRow, const size_t currentCol, const size_t boardRows, const size_t boardCols) {
+    if (currentRow >= boardRows || currentCol >= boardCols) {
         return false;
     } else {
         return true;
@@ -38,8 +41,8 @@ int Board::getNumBlueNeighbors(const size_t cellRow, const size_t cellCol) {
     }
 
     int blueNeighborCount = 0;
-    const int numRows = board.size();
-    const int numCols = board[0].size();
+    const int numRows = static_cast<int>(board.size());
+    const int numCols = static_cast<int>(board[0].size());
 
     for (int rowOffset = -1; rowOffset <= 1; ++rowOffset) {
         for (int colOffset = -1; colOffset <= 1; ++colOffset) {
@@ -66,8 +69,8 @@ int Board::getNumRedNeighbors(const size_t cellRow, const size_t cellCol) {
     }
 
     int redNeighborCount = 0;
-    const int numRows = board.size();
-    const int numCols = board[0].size();
+    const int numRows = rows;
+    const int numCols = cols;
 
     for (int rowOffset = -1; rowOffset <= 1; ++rowOffset) {
         for (int colOffset = -1; colOffset <= 1; ++colOffset) {
@@ -172,6 +175,7 @@ void Board::stepBoard() {
     }
 
     board = std::move(nextBoard); // apply next generation
+    numGenerations++;
 }
 
 void Board::reset() {
@@ -184,6 +188,7 @@ void Board::reset() {
     playerTurn = Owner::Red;
     placedRedCells = 0;
     placedBlueCells = 0;
+    gameResult = GameResult::None;
 }
 
 void Board::toggleRedCell(const int row, const int column) {
@@ -212,7 +217,7 @@ void Board::toggleBlueCell(int row, int column) {
     }
 }
 
-std::size_t Board::getBlueCells() {
+std::size_t Board::getBlueCells() const {
     std::size_t count = 0;
     for(std::size_t i = 0; i < board.size(); i++) {
         for(std::size_t j = 0; j < board[0].size(); j++) {
@@ -224,7 +229,7 @@ std::size_t Board::getBlueCells() {
     return count;
 }
 
-std::size_t Board::getRedCells() {
+std::size_t Board::getRedCells() const {
     std::size_t count = 0;
     for(std::size_t i = 0; i < board.size(); i++) {
         for(std::size_t j = 0; j < board[0].size(); j++) {
@@ -254,4 +259,39 @@ void Board::placeBlueCell() {
     else if(placedBlueCells == 10) {
         playerTurn = Owner::None;
     }
+}
+
+GameResult Board::checkGameResult() {
+    if (numGenerations >= 200) {
+        if (getBlueCells() == getRedCells()) {
+            gameResult = GameResult::Tie;
+        }
+        else if (getBlueCells() > getRedCells()) {
+            gameResult = GameResult::Blue;
+        }
+        else {
+            gameResult = GameResult::Red;
+        }
+    }
+    else if (getBlueCells() == 0 && getRedCells() == 0) {
+        gameResult = GameResult::Tie;
+    }
+    else if (getBlueCells() == 0) {
+        gameResult = GameResult::Red;
+    }
+    else if (getRedCells() == 0) {
+        gameResult = GameResult::Blue;
+    }
+    else {
+        gameResult = GameResult::None;
+    }
+    return gameResult;
+}
+
+GameResult Board::getGameResult() const {
+    return gameResult;
+}
+
+std::size_t Board::getNumGenerations() const {
+    return numGenerations;
 }

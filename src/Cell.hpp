@@ -1,5 +1,4 @@
 #pragma once
-
 #include <cstdint>
 
 enum class CellState : bool { Dead = false, Alive = true };
