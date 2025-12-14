@@ -2,37 +2,50 @@
 #include <vector>
 #include "Cell.hpp"
 
+enum class GameResult: int {
+    None = 0,
+    Red = 1, 
+    Blue = 2,
+    Tie = 3
+};
+
 class Board {
+private:
     std::vector<std::vector<Cell>> board;
     int rows;
-    int col;
+    int cols;
     Owner playerTurn;
     std::size_t placedRedCells;
     std::size_t placedBlueCells;
+    GameResult gameResult;
+    std::size_t numGenerations;
+public:
+    Board(int rows, int col);
+    int getRows();
+    int getCol();
 
-    public:
-        Board(int rows, int col);
-        std::size_t getRows();
-        std::size_t getCol();
+    bool isOnBoard(const size_t currentRow, const size_t currentCol, const size_t boardRows, const size_t boardCols);
+    Cell getCell(const int row, const int col);
+    void stepCell(Cell &cell, const size_t redNeighbors, const size_t blueNeighbors);
 
-        bool isOnBoard(size_t current_row, size_t current_col, size_t board_rows, size_t board_cols);
-        Cell getCell(const int row, const int col);
-        void stepCell(Cell &cell, const size_t redNeighbors, const size_t blueNeighbors);
+    int getNumBlueNeighbors(size_t row, size_t col);
+    int getNumRedNeighbors(size_t row, size_t col);
 
-        int getNumBlueNeighbors(size_t row, size_t col);
-        int getNumRedNeighbors(size_t row, size_t col);
+    void stepBoard();
+    void reset();
 
-        void stepBoard();
-        void reset();
+    void toggleRedCell(int row, int column);
+    void toggleBlueCell(int row, int column);
 
-        void toggleRedCell(int row, int column);
-        void toggleBlueCell(int row, int column);
+    std::size_t getBlueCells() const;
+    std::size_t getRedCells() const;
+    std::size_t getNumGenerations() const;
 
-        std::size_t getBlueCells();
-        std::size_t getRedCells();
+    void setPlayerTurn(Owner color);
+    Owner getPlayerTurn();
+    void placeRedCell();
+    void placeBlueCell();
 
-        void setPlayerTurn(Owner color);
-        Owner getPlayerTurn();
-        void placeRedCell();
-        void placeBlueCell();
+    GameResult checkGameResult();
+    GameResult getGameResult() const;
 };
