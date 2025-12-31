@@ -189,6 +189,7 @@ void Board::reset() {
     placedRedCells = 0;
     placedBlueCells = 0;
     gameResult = GameResult::None;
+    numGenerations = 0;
 }
 
 void Board::toggleRedCell(const int row, const int column) {
@@ -247,16 +248,16 @@ Owner Board::getPlayerTurn() {
 
 void Board::placeRedCell() {
     placedRedCells++;
-    if(placedRedCells == 5 || placedRedCells == 10) {
+    if(placedRedCells == 5 || placedRedCells == 10 || placedRedCells == 15) {
         playerTurn = Owner::Blue;
     }
 }
 void Board::placeBlueCell() {
     placedBlueCells++;
-    if(placedBlueCells == 5) {
+    if(placedBlueCells == 5 || placedBlueCells == 10) {
         playerTurn = Owner::Red;
     }
-    else if(placedBlueCells == 10) {
+    else if(placedBlueCells == 15) {
         playerTurn = Owner::None;
     }
 }

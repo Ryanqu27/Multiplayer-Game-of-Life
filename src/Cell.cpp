@@ -22,6 +22,6 @@ Owner Cell::getOwner() const noexcept {
     return owner; 
 }
 
-void Cell::setOwner(Owner owner) noexcept { 
-    this->owner = owner; 
+void Cell::setOwner(Owner newOwner) noexcept { 
+    this->owner = newOwner; 
 }

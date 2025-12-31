@@ -19,5 +19,5 @@ public:
     [[nodiscard]] bool isAlive() const noexcept;
 
     [[nodiscard]] Owner getOwner() const noexcept;
-    void setOwner(Owner owner) noexcept;
+    void setOwner(Owner newOwner) noexcept;
 };

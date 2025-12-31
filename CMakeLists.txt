@@ -31,8 +31,6 @@ set(PROJECT_SOURCES
     src/Board.cpp
     src/Cell.cpp
     src/GameWindow.cpp
-    src/GameSession.cpp
-    src/NetworkClient.cpp
 )
 
 add_executable(game-of-life
