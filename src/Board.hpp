@@ -41,11 +41,14 @@ public:
     std::size_t getRedCells() const;
     std::size_t getNumGenerations() const;
 
-    void setPlayerTurn(Owner color);
     Owner getPlayerTurn();
     void placeRedCell();
     void placeBlueCell();
 
     GameResult checkGameResult();
     GameResult getGameResult() const;
+
+    int countEmptyNeighborsWithBlueAdjacency(int row, int col);
+    int countEmptyNeighborsWithRedAdjacency(int row, int col);
+    int countBlueClusters();
 };

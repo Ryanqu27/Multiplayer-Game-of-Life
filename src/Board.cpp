@@ -203,6 +203,7 @@ void Board::toggleRedCell(const int row, const int column) {
         board[row][column].setState(CellState::Alive);
         board[row][column].setOwner(Owner::Red);
     }
+    placeRedCell();
 }
 void Board::toggleBlueCell(int row, int column) {
     if (isOnBoard(row, column, board.size(), board[0].size()) == false) {
@@ -216,6 +217,7 @@ void Board::toggleBlueCell(int row, int column) {
         board[row][column].setState(CellState::Alive);
         board[row][column].setOwner(Owner::Blue);
     }
+    placeBlueCell();
 }
 
 std::size_t Board::getBlueCells() const {
@@ -295,4 +297,124 @@ GameResult Board::getGameResult() const {
 
 std::size_t Board::getNumGenerations() const {
     return numGenerations;
+}
+
+int Board::countEmptyNeighborsWithBlueAdjacency(int row, int col) {
+    static const int dirs[8][2] = {
+        {-1,-1}, {-1,0}, {-1,1},
+        { 0,-1},         { 0,1},
+        { 1,-1}, { 1,0}, { 1,1}
+    };
+
+    int count = 0;
+
+    for (auto& d : dirs) {
+        int nr = row + d[0];
+        int nc = col + d[1];
+
+        if (nr < 0 || nr >= rows || nc < 0 || nc >= cols)
+            continue;
+
+        if (board[nr][nc].isAlive())
+            continue;
+
+        int blueN = getNumBlueNeighbors(nr, nc);
+        int redN  = getNumRedNeighbors(nr, nc);
+
+        if (blueN == 2 || blueN == 3) {
+            if (redN <= 1) {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
+int Board::countEmptyNeighborsWithRedAdjacency(int row, int col) {
+    static const int dirs[8][2] = {
+        {-1,-1}, {-1,0}, {-1,1},
+        { 0,-1},         { 0,1},
+        { 1,-1}, { 1,0}, { 1,1}
+    };
+
+    int count = 0;
+
+    for (auto& d : dirs) {
+        int nr = row + d[0];
+        int nc = col + d[1];
+
+        if (nr < 0 || nr >= rows || nc < 0 || nc >= cols)
+            continue;
+
+        if (board[nr][nc].isAlive())
+            continue;
+
+        int blueN = getNumBlueNeighbors(nr, nc);
+        int redN  = getNumRedNeighbors(nr, nc);
+
+        if (redN == 2 || redN == 3) {
+            if (blueN <= 1) {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
+int Board::countBlueClusters() {
+    std::vector<std::vector<bool>> visited(rows,
+        std::vector<bool>(cols, false));
+
+    static const int dirs[8][2] = {
+        {-1,-1}, {-1,0}, {-1,1},
+        { 0,-1},         { 0,1},
+        { 1,-1}, { 1,0}, { 1,1}
+    };
+
+    int clusters = 0;
+
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < cols; ++c) {
+
+            if (visited[r][c])
+                continue;
+
+            if (!board[r][c].isAlive())
+                continue;
+
+            if (board[r][c].getOwner() != Owner::Blue)
+                continue;
+
+            clusters++;
+            std::vector<std::pair<int,int>> stack;
+            stack.push_back({r,c});
+            visited[r][c] = true;
+
+            while (!stack.empty()) {
+                auto [cr, cc] = stack.back();
+                stack.pop_back();
+
+                for (auto& d : dirs) {
+                    int nr = cr + d[0];
+                    int nc = cc + d[1];
+
+                    if (nr < 0 || nr >= rows || nc < 0 || nc >= cols)
+                        continue;
+
+                    if (visited[nr][nc])
+                        continue;
+
+                    if (board[nr][nc].isAlive() &&
+                        board[nr][nc].getOwner() == Owner::Blue) {
+                        visited[nr][nc] = true;
+                        stack.push_back({nr, nc});
+                    }
+                }
+            }
+        }
+    }
+
+    return clusters;
 }

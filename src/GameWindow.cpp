@@ -1,12 +1,69 @@
 #include "GameWindow.hpp"
 #include <thread>
 #include <chrono>
+#include <vector>
 
 GameWindow::GameWindow(int boardRows, int boardCols): 
 board(boardRows, boardCols), window(nullptr), gl_context(NULL), 
-cellSize(20.0f), stepsPerSecond(10.0f), running(false) {}
+cellSize(20.0f), stepsPerSecond(10.0f), running(false), playingAgainstAI(false) {}
 
 void GameWindow::drawBoardUI() {
+    if (showPreGameUI) {
+        ImGui::Begin("Game Setup", nullptr,
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_AlwaysAutoResize);
+
+        if (!choosingDifficulty) {
+            ImGui::Text("Choose Game Type");
+            ImGui::Separator();
+
+            int gameType = playingAgainstAI ? 1 : 0;
+            ImGui::RadioButton("Player vs Player", &gameType, 0);
+            ImGui::RadioButton("Player vs AI", &gameType, 1);
+            playingAgainstAI = (gameType == 1);
+
+            ImGui::Spacing();
+
+            if (ImGui::Button("Start Game", ImVec2(200, 30))) {
+                if (playingAgainstAI) {
+                    choosingDifficulty = true;
+                } else {
+                    showPreGameUI = false;
+                }
+            }
+        }
+        else {
+            ImGui::Text("Choose AI Difficulty");
+            ImGui::Separator();
+
+            if (ImGui::Button("Easy")) {
+                selectedDifficulty = Difficulty::easy;
+                AIOpponent = std::make_unique<AIPlayer>(
+                    Owner::Blue, selectedDifficulty
+                );
+                showPreGameUI = false;
+            }
+            if (ImGui::Button("Medium")) {
+                selectedDifficulty = Difficulty::medium;
+                AIOpponent = std::make_unique<AIPlayer>(
+                    Owner::Blue, selectedDifficulty
+                );
+                showPreGameUI = false;
+            }
+            if (ImGui::Button("Hard")) {
+                selectedDifficulty = Difficulty::hard;
+                AIOpponent = std::make_unique<AIPlayer>(
+                    Owner::Blue, selectedDifficulty
+                );
+                showPreGameUI = false;
+            }
+        }
+        ImGui::End();
+        return;
+    }
+
+    ImGui::Begin("Multiplayer Game of Life");
     if (board.getGameResult() == GameResult::None && board.getPlayerTurn() == Owner::None) {
         running = true;
     }
@@ -41,9 +98,15 @@ void GameWindow::drawBoardUI() {
     const int cols = board.getCol();
     const ImVec2 board_size = ImVec2(cols * cellSize, rows * cellSize);
 
-    // Reserve space for the grid
     ImGui::InvisibleButton("board_inv", board_size);
     ImVec2 top_left = origin;
+    //AI player
+    if (playingAgainstAI && board.getPlayerTurn() == Owner::Blue) {
+        std::vector<std::pair<int, int>> moves = AIOpponent->chooseMove(board);
+        for (auto& move : moves) {
+            board.toggleBlueCell(move.first, move.second);
+        }
+    }
     // Click handling
     if (ImGui::IsItemActive() || ImGui::IsItemHovered()) {
         // Determine which cell the mouse is over when clicked
@@ -54,11 +117,9 @@ void GameWindow::drawBoardUI() {
             if (mr >= 0 && mr < rows && mc >= 0 && mc < cols && board.getPlayerTurn() != Owner::None && !board.getCell(mr,mc).isAlive()) {
                 if (board.getPlayerTurn() == Owner::Red) {
                     board.toggleRedCell(mr, mc);
-                    board.placeRedCell();
                 }
-                else {
+                else if (!playingAgainstAI) {
                     board.toggleBlueCell(mr, mc);
-                    board.placeBlueCell();
                 }
             }
         }
@@ -128,6 +189,7 @@ void GameWindow::runProgram() {
     bool done = false;
     int lastStepTime = SDL_GetTicks();
 
+
     while (!done) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -160,7 +222,6 @@ void GameWindow::runProgram() {
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
         ImGui::SetNextWindowSize(ImVec2(1000, 800), ImGuiCond_Always);
-        ImGui::Begin("Multiplayer Game of Life");
         drawBoardUI();
 
         //Program rendering

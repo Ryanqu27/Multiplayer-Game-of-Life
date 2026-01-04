@@ -8,6 +8,7 @@
 #include "Board.hpp"
 #include "Cell.hpp"
 #include <string>
+#include "AIPlayer.hpp"
 
 class GameWindow {
 private:
@@ -19,6 +20,12 @@ private:
     float cellSize;
     Owner currentToggling;
     std::string screenText;
+    bool playingAgainstAI;
+    std::shared_ptr<AIPlayer> AIOpponent;
+    bool showPreGameUI = true;
+    bool choosingDifficulty = false;
+    Difficulty selectedDifficulty;
+    
 public:
     GameWindow(int boardRows, int boardCols);
     void runProgram();

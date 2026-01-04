@@ -31,6 +31,7 @@ set(PROJECT_SOURCES
     src/Board.cpp
     src/Cell.cpp
     src/GameWindow.cpp
+    src/AIPlayer.cpp
 )
 
 add_executable(game-of-life
