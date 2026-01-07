@@ -10,8 +10,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # ===== FIND PACKAGES =====
 find_package(SDL2 CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(asio CONFIG REQUIRED)
-find_package(jsoncpp CONFIG REQUIRED)
 
 # ===== IMGUI SOURCES =====
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/imgui-master/imgui-master)
@@ -51,7 +49,6 @@ target_link_libraries(game-of-life PRIVATE
     SDL2::SDL2
     SDL2::SDL2main
     OpenGL::GL
-    JsonCpp::JsonCpp
 )
 
 # ===== COMPILER FLAGS =====
